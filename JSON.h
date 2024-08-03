@@ -79,7 +79,7 @@ JSON_API JSON_errno_t JSON(unsigned baseoffset, unsigned jsonsize, const char js
 JSON_API const char *JSON_strerror(JSON_errno_t e);
 
 #ifndef JSON_DECLS_ONLY
-static const char *whitespace(const char *begin, const char *end) {
+static const char *_JSON_whitespace(const char *begin, const char *end) {
     while(begin != end && (*begin == ' ' || *begin == '\t' || *begin == '\r' || *begin == '\n')) { ++begin; }
     return begin;
 }
@@ -88,7 +88,7 @@ JSON_API JSON_errno_t JSON(unsigned baseoffset, unsigned jsonsize, const char js
     const char *pos = json, *end = &json[jsonsize];
     unsigned destpos = 0;
 
-    pos = whitespace(pos, end);
+    pos = _JSON_whitespace(pos, end);
 
     if(pos == end) { return JSON_EEOT; }
     if(destpos == destsize) { return JSON_ENOMEM; }
@@ -98,7 +98,7 @@ JSON_API JSON_errno_t JSON(unsigned baseoffset, unsigned jsonsize, const char js
         {
             const char *start = pos;
             ++pos;
-            pos = whitespace(pos, end);
+            pos = _JSON_whitespace(pos, end);
 
             struct JSON *object = &dest[destpos];
             
@@ -112,7 +112,7 @@ JSON_API JSON_errno_t JSON(unsigned baseoffset, unsigned jsonsize, const char js
 
             unsigned treesize = 0;
             while(1) {
-                pos = whitespace(pos, end);
+                pos = _JSON_whitespace(pos, end);
 
                 // key
                 {
@@ -125,14 +125,14 @@ JSON_API JSON_errno_t JSON(unsigned baseoffset, unsigned jsonsize, const char js
                     ++treesize;
                 }
 
-                pos = whitespace(pos, end);
+                pos = _JSON_whitespace(pos, end);
 
                 // key-value seperator
                 if(pos == end) { return JSON_EEOT; }
                 if(*pos != ':') { return JSON_EINVAL; }
                 ++pos;
 
-                pos = whitespace(pos, end);
+                pos = _JSON_whitespace(pos, end);
                 
                 // value
                 {
@@ -144,7 +144,7 @@ JSON_API JSON_errno_t JSON(unsigned baseoffset, unsigned jsonsize, const char js
                     destpos += dest[destpos].treesize + 1;
                 }
 
-                pos = whitespace(pos, end);
+                pos = _JSON_whitespace(pos, end);
 
                 if(pos == end) { return JSON_EEOT; }
                 if(*pos == ',') { ++pos; continue; }
@@ -163,7 +163,7 @@ JSON_API JSON_errno_t JSON(unsigned baseoffset, unsigned jsonsize, const char js
         {
             const char *start = pos;
             ++pos;
-            pos = whitespace(pos, end);
+            pos = _JSON_whitespace(pos, end);
 
             struct JSON *array = &dest[destpos];
             
@@ -177,7 +177,7 @@ JSON_API JSON_errno_t JSON(unsigned baseoffset, unsigned jsonsize, const char js
 
             unsigned treesize = 0;
             while(1) {
-                pos = whitespace(pos, end);
+                pos = _JSON_whitespace(pos, end);
                 
                 // element
                 {
@@ -189,7 +189,7 @@ JSON_API JSON_errno_t JSON(unsigned baseoffset, unsigned jsonsize, const char js
                     destpos += dest[destpos].treesize + 1;
                 }
 
-                pos = whitespace(pos, end);
+                pos = _JSON_whitespace(pos, end);
 
                 if(pos == end) { return JSON_EEOT; }
                 if(*pos == ',') { ++pos; continue; }
